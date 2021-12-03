@@ -4,13 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 
 class EmployeeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $employees = Employee::all();
+        if ($request->ajax()) {
 
-        return view('employees.index', compact('employees'));
+            $employees = Employee::select('employees.*');
+
+            return DataTables::of($employees)
+                ->addColumn('actions', 'employees.action')
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
+
+        return view('employees.index');
     }
 }
